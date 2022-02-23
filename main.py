@@ -41,7 +41,8 @@ if __name__ == "__main__":
             "serverurl": "http://example.com",
             "noverifytls": False,
             "serverport": 8787,
-            "editorpath": ""
+            "editorpath": "",
+            "editorargs": ""
         }, indent=4))
         f.close()
         print("Config not found. Edit file on \"" + confpath + "\" to be able to use the program")
@@ -56,6 +57,7 @@ if __name__ == "__main__":
     port = conf["serverport"]
     disableVerify = not conf["noverifytls"]
     editorPath = conf["editorpath"]
+    editorArgs = conf["editorargs"]
 
     # Key checking
     res = requests.get(server + "/allnotes", headers={
@@ -83,7 +85,10 @@ if __name__ == "__main__":
         f = open(fn, "w")
         f.close()
         print("Waiting for editor to be closed...")
-        subprocess.Popen([editorPath, fn]).wait()
+        if editorArgs != "":
+            subprocess.Popen([editorPath, editorArgs, fn]).wait()
+        else:
+            subprocess.Popen([editorPath, fn]).wait()
         print("Editor closed. Saving to server as " + args.create)
         f = open(fn, "r")
         res = requests.post(server + "/addnote", headers={
@@ -121,7 +126,10 @@ if __name__ == "__main__":
         f.write(res[args.edit]["note"])
         f.close()
         print("Waiting for editor to be closed...")
-        subprocess.Popen([editorPath, fn]).wait()
+        if editorArgs != "":
+            subprocess.Popen([editorPath, editorArgs, fn]).wait()
+        else:
+            subprocess.Popen([editorPath, fn]).wait()
         print("Editor closed. Saving to server as " + args.edit)
         f = open(fn, "r")
         res = requests.post(server + "/addnote", headers={
