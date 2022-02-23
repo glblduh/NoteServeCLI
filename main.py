@@ -21,6 +21,7 @@ group.add_argument("-l", "--list", help="List all notes", action="store_true")
 group.add_argument("-c", "--create", type=str, help="Create a note")
 group.add_argument("-e", "--edit", type=str, help="Edit a note")
 group.add_argument("-d", "--delete", type=str, help="Delete a note")
+group.add_argument("-p", "--peak", type=str, help="Prints raw note")
 
 if __name__ == "__main__":
     # Path of config file
@@ -89,7 +90,7 @@ if __name__ == "__main__":
             subprocess.Popen([editorPath, editorArgs, fn]).wait()
         else:
             subprocess.Popen([editorPath, fn]).wait()
-        print("Editor closed. Saving to server as " + args.create)
+        print("Editor closed. Saving to server as \"" + args.create + "\"")
         f = open(fn, "r")
         res = requests.post(server + "/addnote", headers={
             "Authorization": "Bearer " + key
@@ -103,6 +104,7 @@ if __name__ == "__main__":
         print("Note saved as \"" + args.create + "\" on " + timesaved)
         sys.exit(0)
 
+    # Activated with --delete or -d argument
     if args.delete is not None:
         res = requests.delete(server + "/removenote/" + args.delete, headers={
             "Authorization": "Bearer " + key
@@ -114,6 +116,7 @@ if __name__ == "__main__":
             print("[ERROR] " + res["error"])
             sys.exit(1)
 
+    # Activated with --edit or -e argument
     if args.edit is not None:
         res = requests.get(server + "/allnotes", headers={
             "Authorization": "Bearer " + key
@@ -130,7 +133,7 @@ if __name__ == "__main__":
             subprocess.Popen([editorPath, editorArgs, fn]).wait()
         else:
             subprocess.Popen([editorPath, fn]).wait()
-        print("Editor closed. Saving to server as " + args.edit)
+        print("Editor closed. Saving to server as \"" + args.edit + "\"")
         f = open(fn, "r")
         res = requests.post(server + "/addnote", headers={
             "Authorization": "Bearer " + key
@@ -142,4 +145,15 @@ if __name__ == "__main__":
         timesaved = time.strftime("%m-%d-%Y %H:%M", time.localtime(res["timeadded"]/1000))
         os.remove(fn)
         print("Note saved as \"" + args.edit + "\" on " + timesaved)
+        sys.exit(0)
+
+    # Activated with --peak or -p argument
+    if args.peak is not None:
+        res = requests.get(server + "/allnotes", headers={
+            "Authorization": "Bearer " + key
+        }, verify=disableVerify).json()
+        if not args.peak in res:
+            print("[ERROR] Note named \"" + args.peak + "\" is not found on server")
+            sys.exit(1)
+        print(res[args.peak]["note"])
         sys.exit(0)
