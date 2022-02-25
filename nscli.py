@@ -78,7 +78,8 @@ if __name__ == "__main__":
         }, verify=disableVerify).json()
         listable = PrettyTable(["Note Name", "Time Added", "First 15 chars"])
         for note in res:
-            listable.add_row([note, time.strftime("%m-%d-%Y %H:%M", time.localtime(res[note]["timeadded"]/1000)), res[note]["note"][:15]])
+            firstchars = res[note]["note"][:15].replace('\n', ' ')
+            listable.add_row([note, time.strftime("%m-%d-%Y %H:%M", time.localtime(res[note]["timeadded"]/1000)), firstchars])
         print(listable)
         sys.exit(0)
 
