@@ -9,6 +9,8 @@ import urllib3
 from prettytable import PrettyTable
 import subprocess
 import time
+from rich.console import Console
+from rich.markdown import Markdown
 
 # Suppress InsecureRequestWarning caused by disabled verification of certificates in Requests
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -155,5 +157,5 @@ if __name__ == "__main__":
         if not args.peak in res:
             print("[ERROR] Note named \"" + args.peak + "\" is not found on server")
             sys.exit(1)
-        print(res[args.peak]["note"])
+        Console().print(Markdown(res[args.peak]["note"]))
         sys.exit(0)
