@@ -27,7 +27,7 @@ group.add_argument("-p", "--peak", type=str, help="Prints raw note")
 
 if __name__ == "__main__":
     # Path of config file
-    confpath = os.path.expanduser("~/.noteservecli.json")
+    confpath = os.path.expanduser("noteservecli.json")
 
     # Shows usage if no arguments are provided
     if len(sys.argv) < 2:
